@@ -7,7 +7,7 @@
 " Static variables {{{1
 let [s:mrbs, s:mrufs] = [[], []]
 
-fu! ctrlp#mrufiles#opts()
+fu! ctrlp_mrw#mrufiles#opts()
 	let [pref, opts] = ['g:ctrlp_mruf_', {
 		\ 'max': ['s:max', 250],
 		\ 'include': ['s:in', ''],
@@ -20,14 +20,14 @@ fu! ctrlp#mrufiles#opts()
 		let [{va[0]}, {pref.ke}] = [pref.ke, exists(pref.ke) ? {pref.ke} : va[1]]
 	endfo
 endf
-cal ctrlp#mrufiles#opts()
+cal ctrlp_mrw#mrufiles#opts()
 " Utilities {{{1
 fu! s:excl(fn)
 	retu !empty({s:ex}) && a:fn =~# {s:ex}
 endf
 
 fu! s:mergelists()
-	let diskmrufs = ctrlp#utils#readfile(ctrlp#mrufiles#cachefile())
+	let diskmrufs = ctrlp_mrw#utils#readfile(ctrlp_mrw#mrufiles#cachefile())
 	cal filter(diskmrufs, 'index(s:mrufs, v:val) < 0')
 	let mrufs = s:mrufs + diskmrufs
 	retu s:chop(mrufs)
@@ -40,7 +40,7 @@ endf
 
 fu! s:reformat(mrufs, ...)
 	let cwd = getcwd()
-	let cwd .= cwd !~ '[\/]$' ? ctrlp#utils#lash() : ''
+	let cwd .= cwd !~ '[\/]$' ? ctrlp_mrw#utils#lash() : ''
 	if {s:re}
 		let cwd = exists('+ssl') ? tr(cwd, '/', '\') : cwd
 		cal filter(a:mrufs, '!stridx(v:val, cwd)')
@@ -82,12 +82,12 @@ fu! s:addtomrufs(fname)
 endf
 
 fu! s:savetofile(mrufs)
-	cal ctrlp#utils#writecache(a:mrufs, s:cadir, s:cafile)
+	cal ctrlp_mrw#utils#writecache(a:mrufs, s:cadir, s:cafile)
 endf
 " Public {{{1
-fu! ctrlp#mrufiles#refresh(...)
+fu! ctrlp_mrw#mrufiles#refresh(...)
 	let mrufs = s:mergelists()
-	cal filter(mrufs, '!empty(ctrlp#utils#glob(v:val, 1)) && !s:excl(v:val)')
+	cal filter(mrufs, '!empty(ctrlp_mrw#utils#glob(v:val, 1)) && !s:excl(v:val)')
 	if exists('+ssl')
 		cal map(mrufs, 'tr(v:val, "/", "\\")')
 		cal map(s:mrufs, 'tr(v:val, "/", "\\")')
@@ -99,7 +99,7 @@ fu! ctrlp#mrufiles#refresh(...)
 	retu a:0 && a:1 == 'raw' ? [] : s:reformat(mrufs)
 endf
 
-fu! ctrlp#mrufiles#remove(files)
+fu! ctrlp_mrw#mrufiles#remove(files)
 	let mrufs = []
 	if a:files != []
 		let mrufs = s:mergelists()
@@ -111,39 +111,39 @@ fu! ctrlp#mrufiles#remove(files)
 	retu s:reformat(mrufs)
 endf
 
-fu! ctrlp#mrufiles#add(fn)
+fu! ctrlp_mrw#mrufiles#add(fn)
 	if !empty(a:fn)
 		cal s:addtomrufs(a:fn)
 	en
 endf
 
-fu! ctrlp#mrufiles#list(...)
+fu! ctrlp_mrw#mrufiles#list(...)
 	retu a:0 ? a:1 == 'raw' ? s:reformat(s:mergelists(), a:1) : 0
 		\ : s:reformat(s:mergelists())
 endf
 
-fu! ctrlp#mrufiles#bufs()
+fu! ctrlp_mrw#mrufiles#bufs()
 	retu s:mrbs
 endf
 
-fu! ctrlp#mrufiles#tgrel()
+fu! ctrlp_mrw#mrufiles#tgrel()
 	let {s:re} = !{s:re}
 endf
 
-fu! ctrlp#mrufiles#cachefile()
+fu! ctrlp_mrw#mrufiles#cachefile()
 	if !exists('s:cadir') || !exists('s:cafile')
-		let s:cadir = ctrlp#utils#cachedir().ctrlp#utils#lash().'mru'
-		let s:cafile = s:cadir.ctrlp#utils#lash().'cache.txt'
+		let s:cadir = ctrlp_mrw#utils#cachedir().ctrlp_mrw#utils#lash().'mrw'
+		let s:cafile = s:cadir.ctrlp_mrw#utils#lash().'cache.txt'
 	en
 	retu s:cafile
 endf
 
-fu! ctrlp#mrufiles#init()
+fu! ctrlp_mrw#mrufiles#init()
 	if !has('autocmd') | retu | en
 	let s:locked = 0
 	aug CtrlPMRUF
 		au!
-		au BufAdd,BufEnter,BufLeave,BufWritePost * cal s:record(expand('<abuf>', 1))
+		au BufWritePost * cal s:record(expand('<abuf>', 1))
 		au QuickFixCmdPre  *vimgrep* let s:locked = 1
 		au QuickFixCmdPost *vimgrep* let s:locked = 0
 		au VimLeavePre * cal s:savetofile(s:mergelists())

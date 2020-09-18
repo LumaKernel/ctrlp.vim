@@ -11,11 +11,11 @@ en
 let g:loaded_ctrlp_tag = 1
 
 cal add(g:ctrlp_ext_vars, {
-	\ 'init': 'ctrlp#tag#init()',
-	\ 'accept': 'ctrlp#tag#accept',
+	\ 'init': 'ctrlp_mrw#tag#init()',
+	\ 'accept': 'ctrlp_mrw#tag#accept',
 	\ 'lname': 'tags',
 	\ 'sname': 'tag',
-	\ 'enter': 'ctrlp#tag#enter()',
+	\ 'enter': 'ctrlp_mrw#tag#enter()',
 	\ 'type': 'tabs',
 	\ })
 
@@ -72,26 +72,26 @@ fu! s:filter(tags)
 endf
 
 fu! s:syntax()
-	if !ctrlp#nosy()
-		cal ctrlp#hicheck('CtrlPTabExtra', 'Comment')
+	if !ctrlp_mrw#nosy()
+		cal ctrlp_mrw#hicheck('CtrlPTabExtra', 'Comment')
 		sy match CtrlPTabExtra '\zs\t.*\ze$'
 	en
 endf
 " Public {{{1
-fu! ctrlp#tag#init()
+fu! ctrlp_mrw#tag#init()
 	if empty(s:tagfiles) | retu [] | en
 	let g:ctrlp_alltags = []
 	let tagfiles = sort(filter(s:tagfiles, 'count(s:tagfiles, v:val) == 1'))
 	for each in tagfiles
-		let alltags = s:filter(ctrlp#utils#readfile(each))
+		let alltags = s:filter(ctrlp_mrw#utils#readfile(each))
 		cal extend(g:ctrlp_alltags, alltags)
 	endfo
 	cal s:syntax()
 	retu g:ctrlp_alltags
 endf
 
-fu! ctrlp#tag#accept(mode, str)
-	cal ctrlp#exit()
+fu! ctrlp_mrw#tag#accept(mode, str)
+	cal ctrlp_mrw#exit()
 	let str = matchstr(a:str, '^[^\t]\+\t\+[^\t]\+\ze\t')
 	let [tg, fdcnt] = [split(str, '^[^\t]\+\zs\t')[0], s:findcount(str)]
 	let cmds = {
@@ -102,9 +102,9 @@ fu! ctrlp#tag#accept(mode, str)
 		\ }
 	let utg = fdcnt[3] < 2 && fdcnt[0] == 1 && fdcnt[1] == 1
 	let cmd = !fdcnt[0] || utg ? cmds[a:mode][0] : cmds[a:mode][1]
-	let cmd = a:mode == 'e' && ctrlp#modfilecond(!&aw)
+	let cmd = a:mode == 'e' && ctrlp_mrw#modfilecond(!&aw)
 		\ ? ( cmd == 'tj' ? 'stj' : 'sp' ) : cmd
-	let cmd = a:mode == 't' ? ctrlp#tabcount().cmd : cmd
+	let cmd = a:mode == 't' ? ctrlp_mrw#tabcount().cmd : cmd
 	if !fdcnt[0] || utg
 		if cmd != ''
 			exe cmd
@@ -121,14 +121,14 @@ fu! ctrlp#tag#accept(mode, str)
 		en
 		cal feedkeys(":".cmd." ".tg."\r".ext, 'nt')
 	en
-	cal ctrlp#setlcdir()
+	cal ctrlp_mrw#setlcdir()
 endf
 
-fu! ctrlp#tag#id()
+fu! ctrlp_mrw#tag#id()
 	retu s:id
 endf
 
-fu! ctrlp#tag#enter()
+fu! ctrlp_mrw#tag#enter()
 	let tfs = tagfiles()
 	let s:tagfiles = tfs != [] ? filter(map(tfs, 'fnamemodify(v:val, ":p")'),
 		\ 'filereadable(v:val)') : []

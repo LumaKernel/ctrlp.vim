@@ -5,7 +5,7 @@
 " =============================================================================
 
 " Static variables {{{1
-fu! ctrlp#utils#lash()
+fu! ctrlp_mrw#utils#lash()
 	retu &ssl || !exists('+ssl') ? '/' : '\'
 endf
 
@@ -13,8 +13,8 @@ fu! s:lash(...)
 	retu ( a:0 ? a:1 : getcwd() ) !~ '[\/]$' ? s:lash : ''
 endf
 
-fu! ctrlp#utils#opts()
-	let s:lash = ctrlp#utils#lash()
+fu! ctrlp_mrw#utils#opts()
+	let s:lash = ctrlp_mrw#utils#lash()
 	let usrhome = $HOME . s:lash( $HOME )
 	let cahome = exists('$XDG_CACHE_HOME') ? $XDG_CACHE_HOME : usrhome.'.cache'
 	let cadir = isdirectory(usrhome.'.ctrlp_cache')
@@ -27,21 +27,21 @@ fu! ctrlp#utils#opts()
 	en
 	let s:cache_dir = cadir
 endf
-cal ctrlp#utils#opts()
+cal ctrlp_mrw#utils#opts()
 
 let s:wig_cond = v:version > 702 || ( v:version == 702 && has('patch051') )
 " Files and Directories {{{1
-fu! ctrlp#utils#cachedir()
+fu! ctrlp_mrw#utils#cachedir()
 	retu s:cache_dir
 endf
 
-fu! ctrlp#utils#cachefile(...)
+fu! ctrlp_mrw#utils#cachefile(...)
 	let [tail, dir] = [a:0 == 1 ? '.'.a:1 : '', a:0 == 2 ? a:1 : getcwd()]
 	let cache_file = substitute(dir, '\([\/]\|^\a\zs:\)', '%', 'g').tail.'.txt'
 	retu a:0 == 1 ? cache_file : s:cache_dir.s:lash(s:cache_dir).cache_file
 endf
 
-fu! ctrlp#utils#readfile(file)
+fu! ctrlp_mrw#utils#readfile(file)
 	if filereadable(a:file)
 		let data = readfile(a:file)
 		if empty(data) || type(data) != 3
@@ -53,29 +53,29 @@ fu! ctrlp#utils#readfile(file)
 	retu []
 endf
 
-fu! ctrlp#utils#mkdir(dir)
+fu! ctrlp_mrw#utils#mkdir(dir)
 	if exists('*mkdir') && !isdirectory(a:dir)
 		sil! cal mkdir(a:dir, 'p')
 	en
 	retu a:dir
 endf
 
-fu! ctrlp#utils#writecache(lines, ...)
-	if isdirectory(ctrlp#utils#mkdir(a:0 ? a:1 : s:cache_dir))
-		sil! cal writefile(a:lines, a:0 >= 2 ? a:2 : ctrlp#utils#cachefile())
+fu! ctrlp_mrw#utils#writecache(lines, ...)
+	if isdirectory(ctrlp_mrw#utils#mkdir(a:0 ? a:1 : s:cache_dir))
+		sil! cal writefile(a:lines, a:0 >= 2 ? a:2 : ctrlp_mrw#utils#cachefile())
 	en
 endf
 
-fu! ctrlp#utils#glob(...)
-	let path = ctrlp#utils#fnesc(a:1, 'g')
+fu! ctrlp_mrw#utils#glob(...)
+	let path = ctrlp_mrw#utils#fnesc(a:1, 'g')
 	retu s:wig_cond ? glob(path, a:2) : glob(path)
 endf
 
-fu! ctrlp#utils#globpath(...)
+fu! ctrlp_mrw#utils#globpath(...)
 	retu call('globpath', s:wig_cond ? a:000 : a:000[:1])
 endf
 
-fu! ctrlp#utils#fnesc(path, type, ...)
+fu! ctrlp_mrw#utils#fnesc(path, type, ...)
 	if exists('*fnameescape')
 		if exists('+ssl')
 			if a:type == 'c'

@@ -11,8 +11,8 @@ en
 let [g:loaded_ctrlp_rtscript, g:ctrlp_newrts] = [1, 0]
 
 cal add(g:ctrlp_ext_vars, {
-	\ 'init': 'ctrlp#rtscript#init(s:caching)',
-	\ 'accept': 'ctrlp#acceptfile',
+	\ 'init': 'ctrlp_mrw#rtscript#init(s:caching)',
+	\ 'accept': 'ctrlp_mrw#acceptfile',
 	\ 'lname': 'runtime scripts',
 	\ 'sname': 'rts',
 	\ 'type': 'path',
@@ -28,21 +28,21 @@ fu! s:nocache()
 		\ !s:caching || ( s:caching > 1 && get(s:filecounts, s:cwd) < s:caching )
 endf
 " Public {{{1
-fu! ctrlp#rtscript#init(caching)
+fu! ctrlp_mrw#rtscript#init(caching)
 	let [s:caching, s:cwd] = [a:caching, getcwd()]
 	if s:nocache() ||
 		\ !( exists('g:ctrlp_rtscache') && g:ctrlp_rtscache[0] == &rtp )
-		sil! cal ctrlp#progress('Indexing...')
-		let entries = split(globpath(ctrlp#utils#fnesc(&rtp, 'g'), '**/*.*'), "\n")
+		sil! cal ctrlp_mrw#progress('Indexing...')
+		let entries = split(globpath(ctrlp_mrw#utils#fnesc(&rtp, 'g'), '**/*.*'), "\n")
 		cal filter(entries, 'count(entries, v:val) == 1')
-		let [entries, echoed] = [ctrlp#dirnfile(entries)[1], 1]
+		let [entries, echoed] = [ctrlp_mrw#dirnfile(entries)[1], 1]
 	el
 		let [entries, results] = g:ctrlp_rtscache[2:3]
 	en
 	if s:nocache() ||
 		\ !( exists('g:ctrlp_rtscache') && g:ctrlp_rtscache[:1] == [&rtp, s:cwd] )
 		if !exists('echoed')
-			sil! cal ctrlp#progress('Processing...')
+			sil! cal ctrlp_mrw#progress('Processing...')
 		en
 		let results = map(copy(entries), 'fnamemodify(v:val, '':.'')')
 	en
@@ -51,7 +51,7 @@ fu! ctrlp#rtscript#init(caching)
 	retu results
 endf
 
-fu! ctrlp#rtscript#id()
+fu! ctrlp_mrw#rtscript#id()
 	retu s:id
 endf
 "}}}

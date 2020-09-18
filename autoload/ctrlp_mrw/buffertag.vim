@@ -14,13 +14,13 @@ en
 let g:loaded_ctrlp_buftag = 1
 
 cal add(g:ctrlp_ext_vars, {
-	\ 'init': 'ctrlp#buffertag#init(s:crfile)',
-	\ 'accept': 'ctrlp#buffertag#accept',
+	\ 'init': 'ctrlp_mrw#buffertag#init(s:crfile)',
+	\ 'accept': 'ctrlp_mrw#buffertag#accept',
 	\ 'lname': 'buffer tags',
 	\ 'sname': 'bft',
-	\ 'exit': 'ctrlp#buffertag#exit()',
+	\ 'exit': 'ctrlp_mrw#buffertag#exit()',
 	\ 'type': 'tabs',
-	\ 'opts': 'ctrlp#buffertag#opts()',
+	\ 'opts': 'ctrlp_mrw#buffertag#opts()',
 	\ })
 
 let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars)
@@ -89,7 +89,7 @@ if executable('jsctags')
 	cal extend(s:types, { 'javascript': { 'args': '-f -', 'bin': 'jsctags' } })
 en
 
-fu! ctrlp#buffertag#opts()
+fu! ctrlp_mrw#buffertag#opts()
 	for [ke, va] in items(s:opts)
 		let {va[0]} = exists(s:pref.ke) ? {s:pref.ke} : va[1]
 	endfo
@@ -197,10 +197,10 @@ fu! s:parseline(line)
 endf
 
 fu! s:syntax()
-	if !ctrlp#nosy()
-		cal ctrlp#hicheck('CtrlPTagKind', 'Title')
-		cal ctrlp#hicheck('CtrlPBufName', 'Directory')
-		cal ctrlp#hicheck('CtrlPTabExtra', 'Comment')
+	if !ctrlp_mrw#nosy()
+		cal ctrlp_mrw#hicheck('CtrlPTagKind', 'Title')
+		cal ctrlp_mrw#hicheck('CtrlPBufName', 'Directory')
+		cal ctrlp_mrw#hicheck('CtrlPTabExtra', 'Comment')
 		sy match CtrlPTagKind '\zs[^\t|]\+\ze|\d\+:[^|]\+|\d\+|'
 		sy match CtrlPBufName '|\d\+:\zs[^|]\+\ze|\d\+|'
 		sy match CtrlPTabExtra '\zs\t.*\ze$' contains=CtrlPBufName,CtrlPTagKind
@@ -220,9 +220,9 @@ fu! s:chknearby(pat)
 	en
 endf
 " Public {{{1
-fu! ctrlp#buffertag#init(fname)
+fu! ctrlp_mrw#buffertag#init(fname)
 	let bufs = exists('s:btmode') && s:btmode
-		\ ? filter(ctrlp#buffers(), 'filereadable(v:val)')
+		\ ? filter(ctrlp_mrw#buffers(), 'filereadable(v:val)')
 		\ : [exists('s:bufname') ? s:bufname : a:fname]
 	let lines = []
 	for each in bufs
@@ -234,19 +234,19 @@ fu! ctrlp#buffertag#init(fname)
 	retu lines
 endf
 
-fu! ctrlp#buffertag#accept(mode, str)
+fu! ctrlp_mrw#buffertag#accept(mode, str)
 	let vals = matchlist(a:str,
 		\ '\v^[^\t]+\t+[^\t|]+\|(\d+)\:[^\t|]+\|(\d+)\|\s(.+)$')
 	let bufnr = str2nr(get(vals, 1))
 	if bufnr
-		cal ctrlp#acceptfile(a:mode, bufnr)
+		cal ctrlp_mrw#acceptfile(a:mode, bufnr)
 		exe 'norm!' str2nr(get(vals, 2, line('.'))).'G'
 		cal s:chknearby('\V\C'.get(vals, 3, ''))
 		sil! norm! zvzz
 	en
 endf
 
-fu! ctrlp#buffertag#cmd(mode, ...)
+fu! ctrlp_mrw#buffertag#cmd(mode, ...)
 	let s:btmode = a:mode
 	if a:0 && !empty(a:1)
 		let s:btmode = 0
@@ -256,7 +256,7 @@ fu! ctrlp#buffertag#cmd(mode, ...)
 	retu s:id
 endf
 
-fu! ctrlp#buffertag#exit()
+fu! ctrlp_mrw#buffertag#exit()
 	unl! s:btmode s:bufname
 endf
 "}}}

@@ -11,8 +11,8 @@ en
 let g:loaded_ctrlp_line = 1
 
 cal add(g:ctrlp_ext_vars, {
-	\ 'init': 'ctrlp#line#init(s:crbufnr)',
-	\ 'accept': 'ctrlp#line#accept',
+	\ 'init': 'ctrlp_mrw#line#init(s:crbufnr)',
+	\ 'accept': 'ctrlp_mrw#line#accept',
 	\ 'lname': 'lines',
 	\ 'sname': 'lns',
 	\ 'type': 'tabe',
@@ -21,21 +21,21 @@ cal add(g:ctrlp_ext_vars, {
 let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars)
 " Utilities {{{1
 fu! s:syntax()
-	if !ctrlp#nosy()
-		cal ctrlp#hicheck('CtrlPBufName', 'Directory')
-		cal ctrlp#hicheck('CtrlPTabExtra', 'Comment')
+	if !ctrlp_mrw#nosy()
+		cal ctrlp_mrw#hicheck('CtrlPBufName', 'Directory')
+		cal ctrlp_mrw#hicheck('CtrlPTabExtra', 'Comment')
 		sy match CtrlPBufName '\t|\zs[^|]\+\ze|\d\+:\d\+|$'
 		sy match CtrlPTabExtra '\zs\t.*\ze$' contains=CtrlPBufName
 	en
 endf
 " Public {{{1
-fu! ctrlp#line#init(bufnr)
+fu! ctrlp_mrw#line#init(bufnr)
 	let [lines, bufnr] = [[], exists('s:bufnr') ? s:bufnr : a:bufnr]
-	let bufs = exists('s:lnmode') && s:lnmode ? ctrlp#buffers('id') : [bufnr]
+	let bufs = exists('s:lnmode') && s:lnmode ? ctrlp_mrw#buffers('id') : [bufnr]
 	for bufnr in bufs
 		let [lfb, bufn] = [getbufline(bufnr, 1, '$'), bufname(bufnr)]
 		if lfb == [] && bufn != ''
-			let lfb = ctrlp#utils#readfile(fnamemodify(bufn, ':p'))
+			let lfb = ctrlp_mrw#utils#readfile(fnamemodify(bufn, ':p'))
 		en
 		cal map(lfb, 'tr(v:val, ''	'', '' '')')
 		let [linenr, len_lfb] = [1, len(lfb)]
@@ -50,15 +50,15 @@ fu! ctrlp#line#init(bufnr)
 	retu lines
 endf
 
-fu! ctrlp#line#accept(mode, str)
+fu! ctrlp_mrw#line#accept(mode, str)
 	let info = matchlist(a:str, '\t|[^|]\+|\(\d\+\):\(\d\+\)|$')
 	let bufnr = str2nr(get(info, 1))
 	if bufnr
-		cal ctrlp#acceptfile(a:mode, bufnr, get(info, 2))
+		cal ctrlp_mrw#acceptfile(a:mode, bufnr, get(info, 2))
 	en
 endf
 
-fu! ctrlp#line#cmd(mode, ...)
+fu! ctrlp_mrw#line#cmd(mode, ...)
 	let s:lnmode = a:mode
 	if a:0 && !empty(a:1)
 		let s:lnmode = 0

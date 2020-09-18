@@ -11,14 +11,14 @@ en
 let g:loaded_ctrlp_bookmarkdir = 1
 
 cal add(g:ctrlp_ext_vars, {
-	\ 'init': 'ctrlp#bookmarkdir#init()',
-	\ 'accept': 'ctrlp#bookmarkdir#accept',
+	\ 'init': 'ctrlp_mrw#bookmarkdir#init()',
+	\ 'accept': 'ctrlp_mrw#bookmarkdir#accept',
 	\ 'lname': 'bookmarked dirs',
 	\ 'sname': 'bkd',
 	\ 'type': 'tabs',
 	\ 'opmul': 1,
 	\ 'nolim': 1,
-	\ 'wipe': 'ctrlp#bookmarkdir#remove',
+	\ 'wipe': 'ctrlp_mrw#bookmarkdir#remove',
 	\ })
 
 let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars)
@@ -34,18 +34,18 @@ endf
 
 fu! s:cachefile()
 	if !exists('s:cadir') || !exists('s:cafile')
-		let s:cadir = ctrlp#utils#cachedir().ctrlp#utils#lash().'bkd'
-		let s:cafile = s:cadir.ctrlp#utils#lash().'cache.txt'
+		let s:cadir = ctrlp_mrw#utils#cachedir().ctrlp_mrw#utils#lash().'bkd'
+		let s:cafile = s:cadir.ctrlp_mrw#utils#lash().'cache.txt'
 	en
 	retu s:cafile
 endf
 
 fu! s:writecache(lines)
-	cal ctrlp#utils#writecache(a:lines, s:cadir, s:cafile)
+	cal ctrlp_mrw#utils#writecache(a:lines, s:cadir, s:cafile)
 endf
 
 fu! s:getbookmarks()
-	retu ctrlp#utils#readfile(s:cachefile())
+	retu ctrlp_mrw#utils#readfile(s:cachefile())
 endf
 
 fu! s:savebookmark(name, cwd)
@@ -84,35 +84,35 @@ fu! s:msg(name, cwd)
 endf
 
 fu! s:syntax()
-	if !ctrlp#nosy()
-		cal ctrlp#hicheck('CtrlPBookmark', 'Identifier')
-		cal ctrlp#hicheck('CtrlPTabExtra', 'Comment')
+	if !ctrlp_mrw#nosy()
+		cal ctrlp_mrw#hicheck('CtrlPBookmark', 'Identifier')
+		cal ctrlp_mrw#hicheck('CtrlPTabExtra', 'Comment')
 		sy match CtrlPBookmark '^> [^\t]\+' contains=CtrlPLinePre
 		sy match CtrlPTabExtra '\zs\t.*\ze$'
 	en
 endf
 " Public {{{1
-fu! ctrlp#bookmarkdir#init()
+fu! ctrlp_mrw#bookmarkdir#init()
 	cal s:setentries()
 	cal s:syntax()
 	retu s:process(copy(s:bookmarks[1]), ':.')
 endf
 
-fu! ctrlp#bookmarkdir#accept(mode, str)
+fu! ctrlp_mrw#bookmarkdir#accept(mode, str)
 	let parts = s:parts(s:modify(a:str, ':p'))
 	cal call('s:savebookmark', parts)
 	if a:mode =~ 't\|v\|h'
-		cal ctrlp#exit()
+		cal ctrlp_mrw#exit()
 	en
-	cal ctrlp#setdir(parts[1], a:mode =~ 't\|h' ? 'chd!' : 'lc!')
+	cal ctrlp_mrw#setdir(parts[1], a:mode =~ 't\|h' ? 'chd!' : 'lc!')
 	if a:mode == 'e'
-		cal ctrlp#switchtype(0)
-		cal ctrlp#recordhist()
-		cal ctrlp#prtclear()
+		cal ctrlp_mrw#switchtype(0)
+		cal ctrlp_mrw#recordhist()
+		cal ctrlp_mrw#prtclear()
 	en
 endf
 
-fu! ctrlp#bookmarkdir#add(dir, ...)
+fu! ctrlp_mrw#bookmarkdir#add(dir, ...)
 	let str = 'Directory to bookmark: '
 	let cwd = a:dir != '' ? a:dir : s:getinput(str, getcwd(), 'dir')
 	if cwd == '' | retu | en
@@ -124,7 +124,7 @@ fu! ctrlp#bookmarkdir#add(dir, ...)
 	cal s:msg(name, cwd)
 endf
 
-fu! ctrlp#bookmarkdir#remove(entries)
+fu! ctrlp_mrw#bookmarkdir#remove(entries)
 	cal s:process(a:entries, ':p')
 	cal s:writecache(a:entries == [] ? [] :
 		\ filter(s:getbookmarks(), 'index(a:entries, v:val) < 0'))
@@ -132,7 +132,7 @@ fu! ctrlp#bookmarkdir#remove(entries)
 	retu s:process(copy(s:bookmarks[1]), ':.')
 endf
 
-fu! ctrlp#bookmarkdir#id()
+fu! ctrlp_mrw#bookmarkdir#id()
 	retu s:id
 endf
 "}}}

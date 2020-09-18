@@ -11,8 +11,8 @@ en
 let g:loaded_ctrlp_quickfix = 1
 
 cal add(g:ctrlp_ext_vars, {
-	\ 'init': 'ctrlp#quickfix#init()',
-	\ 'accept': 'ctrlp#quickfix#accept',
+	\ 'init': 'ctrlp_mrw#quickfix#init()',
+	\ 'accept': 'ctrlp_mrw#quickfix#accept',
 	\ 'lname': 'quickfix',
 	\ 'sname': 'qfx',
 	\ 'type': 'line',
@@ -28,21 +28,21 @@ fu! s:lineout(dict)
 endf
 " Utilities {{{1
 fu! s:syntax()
-	if !ctrlp#nosy()
-		cal ctrlp#hicheck('CtrlPqfLineCol', 'Search')
+	if !ctrlp_mrw#nosy()
+		cal ctrlp_mrw#hicheck('CtrlPqfLineCol', 'Search')
 		sy match CtrlPqfLineCol '|\zs\d\+:\d\+\ze|'
 	en
 endf
 " Public {{{1
-fu! ctrlp#quickfix#init()
+fu! ctrlp_mrw#quickfix#init()
 	cal s:syntax()
 	retu map(getqflist(), 's:lineout(v:val)')
 endf
 
-fu! ctrlp#quickfix#accept(mode, str)
+fu! ctrlp_mrw#quickfix#accept(mode, str)
 	let vals = matchlist(a:str, '^\([^|]\+\ze\)|\(\d\+\):\(\d\+\)|')
 	if vals == [] || vals[1] == '' | retu | en
-	cal ctrlp#acceptfile(a:mode, vals[1])
+	cal ctrlp_mrw#acceptfile(a:mode, vals[1])
 	let cur_pos = getpos('.')[1:2]
 	if cur_pos != [1, 1] && cur_pos != map(vals[2:3], 'str2nr(v:val)')
 		mark '
@@ -51,7 +51,7 @@ fu! ctrlp#quickfix#accept(mode, str)
 	sil! norm! zvzz
 endf
 
-fu! ctrlp#quickfix#id()
+fu! ctrlp_mrw#quickfix#id()
 	retu s:id
 endf
 "}}}

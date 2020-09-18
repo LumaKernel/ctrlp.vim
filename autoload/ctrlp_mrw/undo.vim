@@ -11,12 +11,12 @@ en
 let g:loaded_ctrlp_undo = 1
 
 cal add(g:ctrlp_ext_vars, {
-	\ 'init': 'ctrlp#undo#init()',
-	\ 'accept': 'ctrlp#undo#accept',
+	\ 'init': 'ctrlp_mrw#undo#init()',
+	\ 'accept': 'ctrlp_mrw#undo#accept',
 	\ 'lname': 'undo',
 	\ 'sname': 'udo',
-	\ 'enter': 'ctrlp#undo#enter()',
-	\ 'exit': 'ctrlp#undo#exit()',
+	\ 'enter': 'ctrlp_mrw#undo#enter()',
+	\ 'exit': 'ctrlp_mrw#undo#exit()',
 	\ 'type': 'line',
 	\ 'sort': 0,
 	\ 'nolim': 1,
@@ -80,10 +80,10 @@ fu! s:elapsed(nr)
 endf
 
 fu! s:syntax()
-	if ctrlp#nosy() | retu | en
+	if ctrlp_mrw#nosy() | retu | en
 	for [ke, va] in items({'T': 'Directory', 'Br': 'Comment', 'Nr': 'String',
 		\ 'Sv': 'Comment', 'Po': 'Title'})
-		cal ctrlp#hicheck('CtrlPUndo'.ke, va)
+		cal ctrlp_mrw#hicheck('CtrlPUndo'.ke, va)
 	endfo
 	sy match CtrlPUndoT '\v\d+ \zs[^ ]+\ze|\d+:\d+:\d+'
 	sy match CtrlPUndoBr '\[\|\]'
@@ -116,7 +116,7 @@ fu! s:formatul(...)
 		\ : parts[2].' ['.parts[1].']'.( parts[3] != '' ? ' saved' : '' )
 endf
 " Public {{{1
-fu! ctrlp#undo#init()
+fu! ctrlp_mrw#undo#init()
 	let entries = s:undos[0] ? s:undos[1]['entries'] : s:undos[1]
 	if empty(entries) | retu [] | en
 	if !exists('s:lines')
@@ -131,22 +131,22 @@ fu! ctrlp#undo#init()
 	retu s:lines
 endf
 
-fu! ctrlp#undo#accept(mode, str)
+fu! ctrlp_mrw#undo#accept(mode, str)
 	let undon = matchstr(a:str, '\[\zs\d\+\ze\]')
 	if empty(undon) | retu | en
-	cal ctrlp#exit()
+	cal ctrlp_mrw#exit()
 	exe 'u' undon
 endf
 
-fu! ctrlp#undo#id()
+fu! ctrlp_mrw#undo#id()
 	retu s:id
 endf
 
-fu! ctrlp#undo#enter()
+fu! ctrlp_mrw#undo#enter()
 	let s:undos = s:getundo()
 endf
 
-fu! ctrlp#undo#exit()
+fu! ctrlp_mrw#undo#exit()
 	unl! s:lines
 endf
 "}}}

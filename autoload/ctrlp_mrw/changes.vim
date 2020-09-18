@@ -11,11 +11,11 @@ en
 let g:loaded_ctrlp_changes = 1
 
 cal add(g:ctrlp_ext_vars, {
-	\ 'init': 'ctrlp#changes#init(s:bufnr, s:crbufnr)',
-	\ 'accept': 'ctrlp#changes#accept',
+	\ 'init': 'ctrlp_mrw#changes#init(s:bufnr, s:crbufnr)',
+	\ 'accept': 'ctrlp_mrw#changes#accept',
 	\ 'lname': 'changes',
 	\ 'sname': 'chs',
-	\ 'exit': 'ctrlp#changes#exit()',
+	\ 'exit': 'ctrlp_mrw#changes#exit()',
 	\ 'type': 'tabe',
 	\ 'sort': 0,
 	\ 'nolim': 1,
@@ -44,17 +44,17 @@ fu! s:process(clines, ...)
 endf
 
 fu! s:syntax()
-	if !ctrlp#nosy()
-		cal ctrlp#hicheck('CtrlPBufName', 'Directory')
-		cal ctrlp#hicheck('CtrlPTabExtra', 'Comment')
+	if !ctrlp_mrw#nosy()
+		cal ctrlp_mrw#hicheck('CtrlPBufName', 'Directory')
+		cal ctrlp_mrw#hicheck('CtrlPTabExtra', 'Comment')
 		sy match CtrlPBufName '\t|\d\+:\zs[^|]\+\ze|\d\+:\d\+|$'
 		sy match CtrlPTabExtra '\zs\t.*\ze$' contains=CtrlPBufName
 	en
 endf
 " Public {{{1
-fu! ctrlp#changes#init(original_bufnr, bufnr)
+fu! ctrlp_mrw#changes#init(original_bufnr, bufnr)
 	let bufnr = exists('s:bufnr') ? s:bufnr : a:bufnr
-	let bufs = exists('s:clmode') && s:clmode ? ctrlp#buffers('id') : [bufnr]
+	let bufs = exists('s:clmode') && s:clmode ? ctrlp_mrw#buffers('id') : [bufnr]
 	cal filter(bufs, 'v:val > 0')
 	let [swb, &swb] = [&swb, '']
 	let lines = []
@@ -65,22 +65,22 @@ fu! ctrlp#changes#init(original_bufnr, bufnr)
 	endfo
 	sil! exe 'noa hid b' a:original_bufnr
 	let &swb = swb
-	cal ctrlp#syntax()
+	cal ctrlp_mrw#syntax()
 	cal s:syntax()
 	retu lines
 endf
 
-fu! ctrlp#changes#accept(mode, str)
+fu! ctrlp_mrw#changes#accept(mode, str)
 	let info = matchlist(a:str, '\t|\(\d\+\):[^|]\+|\(\d\+\):\(\d\+\)|$')
 	let bufnr = str2nr(get(info, 1))
 	if bufnr
-		cal ctrlp#acceptfile(a:mode, bufnr)
+		cal ctrlp_mrw#acceptfile(a:mode, bufnr)
 		cal cursor(get(info, 2), get(info, 3))
 		sil! norm! zvzz
 	en
 endf
 
-fu! ctrlp#changes#cmd(mode, ...)
+fu! ctrlp_mrw#changes#cmd(mode, ...)
 	let s:clmode = a:mode
 	if a:0 && !empty(a:1)
 		let s:clmode = 0
@@ -90,7 +90,7 @@ fu! ctrlp#changes#cmd(mode, ...)
 	retu s:id
 endf
 
-fu! ctrlp#changes#exit()
+fu! ctrlp_mrw#changes#exit()
 	unl! s:clmode s:bufnr
 endf
 "}}}
